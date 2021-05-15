@@ -20,7 +20,7 @@ class Server {
         int sendToAll(std::string message, ClientInfo sender, MessageType type);
         bool userExists(std::string username);
         ClientInfo getUser(std::string username);
-        void welcomeUser(Packet p, sockaddr_in info);
+        void welcomeUser(Packet p, sockaddr_in *info);
         void removeUser(std::string username);
         void handleMessages();
         int sendMessage(std::string msg, MessageType type, ClientInfo sender, ClientInfo receiver);

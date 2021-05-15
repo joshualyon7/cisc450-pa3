@@ -148,26 +148,28 @@ int send_packet(int sd, sockaddr_in receiver_info, Packet packet) {
  * @param send_info info of the sender to receive from
  * @return number of bytes received on success, -1 on failure
  */
-Packet rec_packet(int sd, sockaddr_in *sender_info) {
+Packet rec_packet(int sd, sockaddr_in **sender_info) {
     int bytes_received;
     char buff[BUFFER_MAX];
     DataPacket rawPacket;
     
-    socklen_t sender_len = sizeof(*sender_info);
-    memset(sender_info, 0, sizeof(sender_info));
-
+    sockaddr_in *sender_in = (sockaddr_in*)malloc(sizeof(sockaddr_in));
+    socklen_t sender_len = sizeof(*sender_in);
+    memset(sender_in, 0, sizeof(sender_len));
     
     if((bytes_received = recvfrom(sd, buff, BUFFER_MAX, 0, 
-            (struct sockaddr *)&sender_info, &sender_len)) < 0) {
+            (struct sockaddr *)sender_in, &sender_len)) < 0) {
         perror("recv failed with");
         Packet errPkt;
         return errPkt;
     }
     
+    *sender_info = sender_in;
+    
     Packet recPkt;
     recPkt = deserialize(buff);
     std::cout << "after memset" << std::endl;
-    std::cout << "rec IP: " << inet_ntoa(sender_info->sin_addr) << std::endl;
+    std::cout << "rec IP: " << inet_ntoa((*sender_info)->sin_addr) << std::endl;
     
     return recPkt;
 }

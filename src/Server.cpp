@@ -2,6 +2,7 @@
 #include "pa.hpp"
 #include "Packet.hpp"
 #include "ClientInfo.hpp"
+#include <arpa/inet.h>
 
 Server::Server() {}
 
@@ -10,7 +11,7 @@ int Server::openRoom(int port, in_addr_t in_addr, sa_family_t family) {
     info.sin_port = htons(port);
     info.sin_addr.s_addr = in_addr;
     
-    srvInfo.setAddr(info);
+    srvInfo.setAddr(&info);
     srvInfo.setUsername("SERVER");
 
     if((sock = socket(family, SOCK_DGRAM, 0)) < 0) {
@@ -34,9 +35,10 @@ void Server::acceptConnections() {
 
 void Server::handleMessages() {
     Packet p;
-    sockaddr_in p_info;
+    sockaddr_in *p_info;
     while(running) {
         p = rec_packet(sock, &p_info);
+    std::cout << "rec IP: " << inet_ntoa(p_info->sin_addr) << std::endl;
         
         switch(p.getType()) {
             case MessageType::NEW_USER:
@@ -46,6 +48,7 @@ void Server::handleMessages() {
                 removeUser(p.getFrom());
                 break;
             case MessageType::PUBLIC_CHAT:
+                sendToAll(p.getMessage(), getUser(p.getFrom()), p.getType());
                 break;
             case MessageType::PRIVATE_CHAT:
                 break;
@@ -55,7 +58,7 @@ void Server::handleMessages() {
     }
 }
 
-void Server::welcomeUser(Packet p, sockaddr_in p_info) {
+void Server::welcomeUser(Packet p, sockaddr_in *p_info) {
     ClientInfo ci(p.getFrom(), p_info);
     
     if(userExists(p.getFrom())) {
@@ -78,7 +81,7 @@ void Server::welcomeUser(Packet p, sockaddr_in p_info) {
 int Server::sendMessage(std::string msg, MessageType type, ClientInfo sender, ClientInfo receiver) {
     Packet p(sender.getUsername(), msg, type, seq);
     
-    if(send_packet(sock, receiver.getInfo(), p) < 1) {
+    if(send_packet(sock, *receiver.getInfo(), p) < 1) {
         std::cout << "problem sending message to " << receiver.getUsername() << std::endl;
         return -1;
     }

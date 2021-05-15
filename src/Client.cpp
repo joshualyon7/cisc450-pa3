@@ -85,7 +85,8 @@ int Client::sendPublic(std::string msg) {
 }
 
 Packet Client::receiveMessageRaw() {
-    return rec_packet(sock, &server);
+    sockaddr_in *srvPtr = &server;
+    return rec_packet(sock, &srvPtr);
 }
 
 void Client::populateUserList(std::string users_raw) {

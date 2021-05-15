@@ -13,16 +13,16 @@
 #include <netinet/in.h>
 class ClientInfo {
     private:
-        sockaddr_in addr;
+        sockaddr_in *addr;
         std::string username;
 
     public:
-        ClientInfo(std::string username, sockaddr_in addr);
+        ClientInfo(std::string username, sockaddr_in *addr);
         ClientInfo();
         std::string getUsername();
-        sockaddr_in getInfo();
+        sockaddr_in *getInfo();
         void setUsername(std::string Username);
-        void setAddr(sockaddr_in Addr);
+        void setAddr(sockaddr_in *Addr);
         ~ClientInfo();
 };
 
