@@ -1,0 +1,35 @@
+List of relavent files:
+    - src - directory to hold all c source files in the program 
+        - client.c - application code for the client side program
+        - server.c - application code for the server side program
+        - netutils.c - shared functions for the client and server side programs
+    - include - directory for all header files in the program
+        - pa1.h - types and function declarations for both programs
+        - config.c - configuration for both the client and server side programs.
+    - obj - directory that object files are placed in on compilation
+    - Makefile - contains targets to compile all necessary files for the program.
+
+Compilation instructions:
+    Use the makefile for compilation - 
+
+        - Both client and server - run 'make' on the command line
+        - client - run 'make client' on the command line
+        - server - run 'make server' on the command line
+    
+    To clean up object/executable files, run 'make clean'
+
+Configuration file: 
+    - Configurations are all in 'config.h'.
+    - Change the values after each of the constant definitions to configure.
+    - SERVER_PORT is the port the server's socket binds to
+    - SERVER_ADDR is the server's IP address
+    - MAX_LINE is the maximum amount of bytes to send in each packet
+    - HEADER_SIZE is the size of a header in bytes
+
+Running instructions: 
+    - The server needs to run before the client.
+    - The server executable file is for running the server side of the program
+        - To run, enter './server' from the server executable's current directory
+    - The client executable file is for running the client side of the program
+        - To run, enter './client' from the client executable's current directory
+
