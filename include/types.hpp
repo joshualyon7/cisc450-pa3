@@ -3,7 +3,7 @@
  * @file pa1.h
  * @author Josh Lyon (joshlyon@udel.edu)
  * @brief contains type definitions and shared includes/function declarations
- * for file sharing over TCP. 
+ * for message passing over UDP.
  * 
  */
 #include <string>
@@ -15,6 +15,7 @@ enum MessageType {
     USER_EXIT,
     USER_ACCEPT,
     USER_REJECT,
+    USER_GOODBYE,
     PUBLIC_CHAT,
     PRIVATE_CHAT, 
     NO_USER,

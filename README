@@ -1,14 +1,3 @@
-List of relavent files:
-    - src - directory to hold all c source files in the program 
-        - client.c - application code for the client side program
-        - server.c - application code for the server side program
-        - netutils.c - shared functions for the client and server side programs
-    - include - directory for all header files in the program
-        - pa1.h - types and function declarations for both programs
-        - config.c - configuration for both the client and server side programs.
-    - obj - directory that object files are placed in on compilation
-    - Makefile - contains targets to compile all necessary files for the program.
-
 Compilation instructions:
     Use the makefile for compilation - 
 
@@ -18,6 +7,36 @@ Compilation instructions:
     
     To clean up object/executable files, run 'make clean'
 
+Running instructions: 
+    - The server needs to run before the client.
+    - The server executable file is for running the server side of the program
+        - To run, enter './server' from the server executable's current directory
+    - The client executable file is for running the client side of the program
+        - To run, enter './client' from the client executable's current directory
+        - After entering username, for help enter '/help' to receive a list of usable commands.
+
+List of relavent files:
+    - src - directory to hold all c source files in the program 
+        - clientapp.cpp - application code for the client side program
+        - serverapp.cpp - application code for the server side program
+        - netutils.cpp - shared functions for the client and server side programs
+        - Client.cpp - client class function definitions
+        - Server.cpp - server class function definitions
+        - ClientInfo.cpp - clientinfo class function definitions
+        - Packet.cpp - packet class function definitions
+
+    - include - directory for all header files in the program
+        - pa.hpp - types and function declarations for both programs
+        - config.hpp - configuration for both the client and server side programs.
+        - Client.hpp - contains class definition for the client
+        - Server.hpp - contains class definition for the server
+        - ClientInfo.hpp - contains class definition for the clientinfo class
+        - Packet.hpp - contians class definition for the Packet class
+        - types.hpp - contains shared types for both sides of the program
+
+    - obj - directory that object files are placed in on compilation
+    - Makefile - contains targets to compile all necessary files for the program.
+
 Configuration file: 
     - Configurations are all in 'config.h'.
     - Change the values after each of the constant definitions to configure.
@@ -25,11 +44,3 @@ Configuration file:
     - SERVER_ADDR is the server's IP address
     - MAX_LINE is the maximum amount of bytes to send in each packet
     - HEADER_SIZE is the size of a header in bytes
-
-Running instructions: 
-    - The server needs to run before the client.
-    - The server executable file is for running the server side of the program
-        - To run, enter './server' from the server executable's current directory
-    - The client executable file is for running the client side of the program
-        - To run, enter './client' from the client executable's current directory
-

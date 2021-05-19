@@ -1,3 +1,9 @@
+/**
+ * @file pa.hpp
+ * @author josh lyon (joshlyon@udel.edu)
+ * @brief contains declarations of shared UDP utility functions.
+ * @version 0.1
+ */
 #include "Packet.hpp"
 #include <string>
 #include "types.hpp"

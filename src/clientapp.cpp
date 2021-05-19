@@ -1,12 +1,16 @@
+/**
+ * @file clientapp.cpp
+ * @author josh lyon (joshlyon@udel.edu)
+ * @brief contains application code to run the client side of the chatroom program
+ * @version 0.1
+ */
 #include "Client.hpp"
 #include <iostream>
 #include "config.hpp"
 #include <iomanip>
-#include <ncurses.h>
-#define OUTBOX_H 20
+#include <string>
 
 Command strToCommand(std::string cmd);
-std::string processInput(std::string input);
 
 int main(void) {
     Client client;
@@ -23,21 +27,17 @@ int main(void) {
     std::string input;
     char* in_str;
     while(running) {
-        //std::cout << "before input" << std::endl;
-        input = client.getDisplay().getInput();
-        //std::cout << "got " + input << std::endl;
+        std::getline(std::cin, input);
         
         input = input.find_first_not_of(" ") == std::string::npos ? "" : input;
         if(input.length() == 0) continue;
-        
-
 
         if(!(input[0] == '/')) {
             client.sendPublic(input);
             continue;
         }
 
-        Command cmd = strToCommand(input.substr(1, input.find_first_of(' ')));
+        Command cmd = strToCommand(input.substr(1, input.find_first_of(' ') - 1));
         std::string toUser = "";
 
         switch(cmd) {
@@ -65,14 +65,15 @@ int main(void) {
 
 }
 
+/**
+ * @brief converts a user-entered command to a command of type Command
+ * 
+ * @param cmd 
+ * @return Command 
+ */
 Command strToCommand(std::string cmd) {
     if(cmd == "leave") return Command::LEAVE;
     if(cmd == "list") return Command::LIST;
     if(cmd == "private") return Command::PRIVATE;
     else return Command::HELP;
-}
-
-std::string processInput(std::string input) {
-    if(input.find_first_not_of(" ") == std::string::npos) return "";
-    return input;
 }

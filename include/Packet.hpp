@@ -1,3 +1,13 @@
+/**
+ * @file Packet.hpp
+ * @author your name (you@domain.com)
+ * @brief contains function prototypes and object data for the Packet class.
+ * @version 0.1
+ * @date 2021-05-19
+ * 
+ * @copyright Copyright (c) 2021
+ * 
+ */
 #pragma once
 #include <string>
 #include "types.hpp"

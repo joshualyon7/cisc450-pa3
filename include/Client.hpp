@@ -1,3 +1,10 @@
+/**
+ * @file Client.hpp
+ * @author josh lyon (joshlyon@udel.edu)
+ * @brief contains prototypes and members for the Client class
+ * @version 0.1
+ * 
+ */
 #include "types.hpp"
 #include <vector>
 #include <sys/socket.h>
@@ -5,22 +12,20 @@
 #include <netinet/in.h>
 #include <string>
 #include "Packet.hpp"
-#include "Display.hpp"
 #include <thread>
 #include <mutex>
+#include <list>
 
 class Client {
     private:
         // members
-        std::mutex *mtx;
         std::string username;
-        std::vector<std::string> users;
+        std::list<std::string> users;
         sockaddr_in server;
         short seq = 0;
         int sock;
         std::thread listener;
         volatile bool running;
-        Display display;
         
         // methods
         void populateUserList(std::string users);
@@ -37,10 +42,9 @@ class Client {
         
         //mutators
         std::string getUsername();
-        std::vector<std::string> getUsers();
+        std::list<std::string> getUsers();
         sockaddr_in getServer();
         int getSock();
-        Display getDisplay();
         
         int joinServer();
         int leaveServer();

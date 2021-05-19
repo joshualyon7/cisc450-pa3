@@ -7,11 +7,11 @@ OBJ_DIR := obj
 EXE := client server
 SRC := $(wildcard $(SRC_DIR)/*.cpp)
 SERV_OBJ = $(OBJ_DIR)/serverapp.o $(OBJ_DIR)/netutils.o $(OBJ_DIR)/ClientInfo.o $(OBJ_DIR)/Server.o $(OBJ_DIR)/Packet.o
-CLIENT_OBJ = $(OBJ_DIR)/clientapp.o $(OBJ_DIR)/netutils.o $(OBJ_DIR)/Client.o $(OBJ_DIR)/Packet.o $(OBJ_DIR)/Display.o
+CLIENT_OBJ = $(OBJ_DIR)/clientapp.o $(OBJ_DIR)/netutils.o $(OBJ_DIR)/Client.o $(OBJ_DIR)/Packet.o 
 
 CPPFLAGS := -Iinclude
 CFLAGS := -Wall
-LDFLAGS := -Llib -pthread -lncurses
+LDFLAGS := -Llib -pthread 
 LDLIBS := -lm
 
 .PHONY: all clean
@@ -25,9 +25,6 @@ client: $(CLIENT_OBJ)
 server: $(SERV_OBJ)
 	$(CC) $^ $(LDLIBS) -o $@ $(LDFLAGS) 
 	
-displaytest: displaytest.o obj/Display.o
-	$(CC) $^ $(LDLIBS) -o $@ $(LDFLAGS) 
-
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 

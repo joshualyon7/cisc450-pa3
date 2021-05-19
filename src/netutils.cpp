@@ -15,7 +15,7 @@
 #include "Packet.hpp"
 
 /**
- * @brief serializes a data packet (found at https://stackoverflow.com/a/20838004)
+ * @brief serializes a data packet (adapted from https://stackoverflow.com/a/20838004)
  * 
  * @param packet 
  * @param data 
@@ -44,11 +44,10 @@ void serialize(DataPacket *packet, char *data)
         p++;
         i++;
     }
-    std::cout << data << std::endl;
 }
 
 /**
- *  @brief deserializes a data packet (found at https://stackoverflow.com/a/20838004)
+ *  @brief deserializes a data packet (adapted from https://stackoverflow.com/a/20838004)
  *  
  *  @param packet 
  *  @param data 
@@ -91,18 +90,18 @@ Packet deserialize(char *data)
 }
 
 /**
- * @brief send a packet containing data on sd
+ * @brief sends packet to receiver on sd
  * 
- * @param sd socket descriptor to send from
- * @param data string of data to send
- * @param seq sequence number to send the data packet with
- * @param rec_info info of the receiver to send to 
- * @return number of bytes sent on success, -1 on failure
+ * @param sd 
+ * @param receiver_info 
+ * @param packet 
+ * @return int 
  */
 int send_packet(int sd, sockaddr_in receiver_info, Packet packet) {
     int bytes_sent, count = packet.getMessage().length();
 
-    if(packet.getMessage().length() > MAX_LINE) {
+    if(packet.getMessage().size() > MAX_LINE) {
+        std::cout << packet.getMessage().length() << " " << packet.getMessage() << std::endl;
         return 0;
     }
 
@@ -132,13 +131,11 @@ int send_packet(int sd, sockaddr_in receiver_info, Packet packet) {
 }
 
 /**
- * @brief receives a packet and stores its data in 'data'
+ * @brief receives a packet (which it returns) and stores the sender's info in sender_info
  * 
- * @param sd socket descriptor to receive from
- * @param data pointer to string to store the packet's data
- * @param seq_no pointer to int to store the sequence number
- * @param send_info info of the sender to receive from
- * @return number of bytes received on success, -1 on failure
+ * @param sd 
+ * @param sender_info 
+ * @return Packet 
  */
 Packet rec_packet(int sd, sockaddr_in **sender_info) {
     int bytes_received;

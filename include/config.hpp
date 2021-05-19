@@ -1,7 +1,7 @@
 /**
  * @file config.h
  * @author Josh Lyon (joshlyon@udel.edu)
- * @brief contains config values for the file sharing program
+ * @brief contains config values for UDP chatroom program
  * 
  */
 

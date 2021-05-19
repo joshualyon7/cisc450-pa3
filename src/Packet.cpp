@@ -1,9 +1,25 @@
+/**
+ * @file Packet.cpp
+ * @author josh lyon (joshlyon@udel.edu)
+ * @brief contains implementations of the methods from the Packet class.
+ * @version 0.1
+ */
 #include "Packet.hpp"
 #include <string> 
 
+/**
+ * @brief Construct a new Packet:: Packet object with the parameters passed in
+ * 
+ * @param From 
+ * @param Message 
+ * @param Type 
+ * @param Seq 
+ */
 Packet::Packet(std::string From, std::string Message, MessageType Type, short Seq) {
     from = From;
-    message = Message;
+    std::string msg(Message);
+    msg.resize(80);
+    message = msg;
     type = Type;
     seq = Seq;
 }
