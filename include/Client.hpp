@@ -5,11 +5,14 @@
 #include <netinet/in.h>
 #include <string>
 #include "Packet.hpp"
+#include "Display.hpp"
 #include <thread>
+#include <mutex>
 
 class Client {
     private:
         // members
+        std::mutex *mtx;
         std::string username;
         std::vector<std::string> users;
         sockaddr_in server;
@@ -17,6 +20,7 @@ class Client {
         int sock;
         std::thread listener;
         volatile bool running;
+        Display display;
         
         // methods
         void populateUserList(std::string users);
@@ -36,6 +40,7 @@ class Client {
         std::vector<std::string> getUsers();
         sockaddr_in getServer();
         int getSock();
+        Display getDisplay();
         
         int joinServer();
         int leaveServer();

@@ -103,8 +103,7 @@ int send_packet(int sd, sockaddr_in receiver_info, Packet packet) {
     int bytes_sent, count = packet.getMessage().length();
 
     if(packet.getMessage().length() > MAX_LINE) {
-        std::cout << "message too long" << std::endl;
-        return -1;
+        return 0;
     }
 
     DataPacket toSerialize = {
@@ -129,15 +128,8 @@ int send_packet(int sd, sockaddr_in receiver_info, Packet packet) {
     
     }
     
-    
-    if(count) std::cout << "Packet " << packet.getSeq() << " succesfully transmitted with " << (HEADER_SIZE + count + packet.getFrom().length()) << " data bytes" << std::endl;
-    else std::cout << "End of Transmission Packet with sequence number " << packet.getSeq() << " transmitted" << std::endl;
-
     return bytes_sent;
 }
-
-
-
 
 /**
  * @brief receives a packet and stores its data in 'data'
@@ -168,8 +160,6 @@ Packet rec_packet(int sd, sockaddr_in **sender_info) {
     
     Packet recPkt;
     recPkt = deserialize(buff);
-    std::cout << "after memset" << std::endl;
-    std::cout << "rec IP: " << inet_ntoa((*sender_info)->sin_addr) << std::endl;
     
     return recPkt;
 }

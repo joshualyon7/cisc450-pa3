@@ -38,7 +38,6 @@ void Server::handleMessages() {
     sockaddr_in *p_info;
     while(running) {
         p = rec_packet(sock, &p_info);
-    std::cout << "rec IP: " << inet_ntoa(p_info->sin_addr) << std::endl;
         
         switch(p.getType()) {
             case MessageType::NEW_USER:
@@ -76,6 +75,8 @@ void Server::welcomeUser(Packet p, sockaddr_in *p_info) {
     sendMessage(user_list, MessageType::USER_ACCEPT, srvInfo, ci);
     sendToAll(ci.getUsername(), srvInfo, MessageType::NEW_USER);
 
+    std::cout << "added user " << p.getFrom() << std::endl;
+
 }
 
 int Server::sendMessage(std::string msg, MessageType type, ClientInfo sender, ClientInfo receiver) {
@@ -85,6 +86,8 @@ int Server::sendMessage(std::string msg, MessageType type, ClientInfo sender, Cl
         std::cout << "problem sending message to " << receiver.getUsername() << std::endl;
         return -1;
     }
+    
+    std::cout << "sent message " << p.getMessage() << std::endl;
     return 1;
 }
 
@@ -108,7 +111,8 @@ int Server::sendToOne(std::string message, ClientInfo sender, ClientInfo receive
 int Server::sendToAll(std::string message, ClientInfo sender, MessageType type) {
     for(std::map<std::string, ClientInfo>::iterator it = connections.begin();
             it != connections.end(); it++) {
-        if(sendMessage(message, MessageType::PUBLIC_CHAT, sender, it->second) < 0){
+        if(sender.getUsername() == it->second.getUsername()) continue;
+        if(sendMessage(message, type, sender, it->second) < 0){
             std::cout << "problem sending message to user " << it->second.getUsername() << std::endl;
             return -1;
         }

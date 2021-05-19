@@ -4,24 +4,34 @@
 #include <iostream>
 #include <arpa/inet.h>
 #include<bits/stdc++.h>
+#include <unistd.h>
 
-Client::Client() {}
-Client::~Client() {}
+Client::Client() {
+    mtx = new std::mutex();
+
+}
+Client::~Client() {
+    delete mtx;
+}
 
 int Client::joinServer() {
     Packet p;
     MessageType status = MessageType::USER_REJECT;
 
     while (status == USER_REJECT) {
-        std::cout << "Choose a username: ";
-        std::cin >> username;
+        mtx->lock();
+        display.writeOut("Welcome! Please choose a username to get started.");
+        username = display.getInput();
+        mtx->unlock();
         if(sendMessage(username, MessageType::NEW_USER) < 0) {
-            std::cout << "error sending username to server" << std::endl;
+            display.writeOut("error sending username to server");
             return -1;
         }
         p = receiveMessageRaw();
         if ((status = p.getType()) == MessageType::USER_REJECT) {
-            std::cout << "Username taken." << std::endl;
+            mtx->lock();
+            display.writeOut("Username taken.");
+            mtx->unlock();
         }
     }
     
@@ -34,7 +44,9 @@ int Client::joinServer() {
 
 
 int Client::connectToServer(std::string ip, int port, sa_family_t family, int connType) {
-    std::cout << "connecting to server..." << std::endl;
+    mtx->lock();
+    display.writeOut("connecting to server...");
+    mtx->unlock();
     server.sin_addr.s_addr = inet_addr(ip.c_str());
     server.sin_port = htons(port); 
     server.sin_family = family;
@@ -49,7 +61,9 @@ int Client::connectToServer(std::string ip, int port, sa_family_t family, int co
         return -1;
     }
 
-    std::cout << "client connected to server!" << std::endl;
+    mtx->lock();
+    display.writeOut("client connected to server!");
+    mtx->unlock();
     
     return 1;
 }
@@ -58,7 +72,7 @@ int Client::sendMessage(std::string msg, MessageType type) {
     Packet p(username, msg, type, seq);
 
     if(send_packet(sock, server, p) < 0) {
-        std::cout << "problem sending packet" << std::endl;
+        display.writeOut("problem sending packet...");
         return -1;
     }
     return 1;
@@ -68,7 +82,7 @@ int Client::sendPrivate(std::string input) {
     input = input.substr(input.find_first_of(' '));
 
     if(sendMessage(input, MessageType::PRIVATE_CHAT) < 0) {
-        std::cout << "problem sending message" << std::endl;
+        display.writeOut("problem sending message...");
         return -1;
     }
 
@@ -76,10 +90,12 @@ int Client::sendPrivate(std::string input) {
 }
 
 int Client::sendPublic(std::string msg) {
+    //std::cout << "trying to send " << msg << std::endl;
     if(sendMessage(msg, MessageType::PUBLIC_CHAT) < 0) {
-        std::cout << "problem sending message" << std::endl;
+        display.writeOut("problem sending message...");
         return -1;
     }
+    //std::cout << "after sending " << msg << std::endl;
 
     return 1;
 }
@@ -102,37 +118,43 @@ void Client::populateUserList(std::string users_raw) {
 }
 
 void Client::printUsers() {
-    std::cout << "-- USERS --" << std::endl;
+    mtx->lock();
+    display.writeOut("-- USERS --");
     
     for(std::vector<std::string>::iterator user = users.begin(); user != users.end(); user++) {
-        std::cout << "> " << *user << std::endl;
+        display.writeOut("> " + *user);
     }
+    mtx->unlock();
 }
 
 void Client::printHelp() {
+    mtx->lock();
     std::string cmdStrings[] = {
         "/private [user] - sends a private message to a user",
         "/list - lists all users in the chatroom",
         "/leave - leaves the chatroom",
         "/help - prints this help string"
     };
-    std::cout << "-- HELP --" << std::endl;
-    std::cout << "Commands (/[command])" << std::endl;
+    display.writeOut("\n-- HELP --");
+    display.writeOut("Commands (/[command])");
     for(std::string cmd : cmdStrings) {
-        std::cout << "- " << cmd << std::endl;
+        display.writeOut("- " + cmd);
     }
+    mtx->unlock();
 }
 
 void Client::listen() {
     listener = std::thread(&Client::listenToServer, this);
-    std::cout << "listener thread started listening to server" << std::endl;
+    mtx->lock();
+    display.writeOut("listener thread started listening to server");
+    mtx->unlock();
 
 }
 
 void Client::stopListening() {
     running = false;
     listener.join();
-    std::cout << "stopped listening for messages from server" << std::endl;
+    display.writeOut("stopped listening for messages from server");
 }
 
 void Client::listenToServer() {
@@ -153,7 +175,9 @@ void Client::listenToServer() {
                 removeUser(p.getFrom());
                 break;
             case MessageType::SERVER_CLOSE:
-                std::cout << "Server closed unexpectedly" << std::endl;
+                mtx->lock();
+                display.writeOut("Server closed unexpectedly");
+                mtx->unlock();
                 leaveServer();
                 return;
             default:
@@ -164,17 +188,29 @@ void Client::listenToServer() {
 }
 
 void Client::displayMessage(std::string message, std::string sender, bool priv) {
-    std::cout << sender << (priv ? "(Private): " : ": ") << message << std::endl;
+    display.writeOut("before lock()");
+    sleep(5);
+    mtx->lock();
+    display.writeOut("after lock()");
+    display.writeOut(sender + (priv ? "(Private): " : ": ") + message);
+    mtx->unlock();
 }
 
 void Client::addUser(std::string user) {
+    std::string pre("Server: User ");
+    std::string suffix(" has entered the chatroom!");
     users.push_back(user);
-    std::cout << "User " << user << " has entered the chatroom!" << std::endl;
+    display.writeOut("before lock");
+    mtx->lock();
+    display.writeOut(pre.append(user).append(suffix));
+    mtx->unlock();
 }
 
 void Client::removeUser(std::string user) {
     std::remove(users.begin(), users.end(), user);
-    std::cout << "User " << user << " has left the chatroom." << std::endl;
+    mtx->lock();
+    display.writeOut("User " + user + " has left the chatroom!");
+    mtx->unlock();
 }
 
 int Client::leaveServer() {
@@ -195,4 +231,7 @@ sockaddr_in Client::getServer() {
 }
 int Client::getSock() {
     return sock;
+}
+Display Client::getDisplay() {
+    return display;
 }

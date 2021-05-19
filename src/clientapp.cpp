@@ -1,11 +1,14 @@
 #include "Client.hpp"
 #include <iostream>
 #include "config.hpp"
+#include <iomanip>
+#include <ncurses.h>
+#define OUTBOX_H 20
 
 Command strToCommand(std::string cmd);
+std::string processInput(std::string input);
 
 int main(void) {
-    std::cout << "client starting up..." << std::endl;
     Client client;
     bool running = true;
     
@@ -14,12 +17,20 @@ int main(void) {
         return -1;
     }
     
+    
     client.joinServer();
     
     std::string input;
+    char* in_str;
     while(running) {
-        std::cout << "$>> ";
-        std::cin >> input;
+        //std::cout << "before input" << std::endl;
+        input = client.getDisplay().getInput();
+        //std::cout << "got " + input << std::endl;
+        
+        input = input.find_first_not_of(" ") == std::string::npos ? "" : input;
+        if(input.length() == 0) continue;
+        
+
 
         if(!(input[0] == '/')) {
             client.sendPublic(input);
@@ -50,15 +61,18 @@ int main(void) {
     
     }
     
-    std::cout << "Goodbye!" << std::endl;
     return 0;
 
 }
-
 
 Command strToCommand(std::string cmd) {
     if(cmd == "leave") return Command::LEAVE;
     if(cmd == "list") return Command::LIST;
     if(cmd == "private") return Command::PRIVATE;
     else return Command::HELP;
+}
+
+std::string processInput(std::string input) {
+    if(input.find_first_not_of(" ") == std::string::npos) return "";
+    return input;
 }
